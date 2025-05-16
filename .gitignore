@@ -1,0 +1,20 @@
+# Build artifacts
+*.exe
+*.obj
+*.o
+*.ilk
+*.pdb
+*.out
+
+# Visual Studio / IDE
+.vs/
+*.vcxproj*
+*.suo
+
+# MSYS / MinGW temporary files
+/DylanOS.exe
+/DylanOS.exe.manifest
+
+# OS files
+Thumbs.db
+.DS_Store
