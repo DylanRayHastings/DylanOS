@@ -27,14 +27,30 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR pCmdLine, int nCmdSho
     g_hdc = GetDC(g_hwnd);
 
     // Launch the draw loop on a worker thread
-    CreateThread(NULL, 0, DrawLoop, NULL, 0, NULL);
+    HANDLE hThread = CreateThread(NULL, 0, DrawLoop, NULL, 0, NULL);
+    if (!hThread) {
+        MessageBox(NULL, "Failed to start draw thread.", "Error", MB_OK | MB_ICONERROR);
+        return 1;
+    }
 
-    // Main message loop
+    // Main message loop keeps the UI responsive
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
 
+    // Once window is closed, wait for the draw thread to finish
+    WaitForSingleObject(hThread, INFINITE);
+    CloseHandle(hThread);
+
+    // Cleanup and exit
+    ReleaseDC(g_hwnd, g_hdc);
+    DestroyWindow(g_hwnd);
     return 0;
+}
+
+// ANSI fallback entrypoint
+int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE hPrev, PWSTR pCmdLine, int nCmdShow) {
+    return WinMain(hInst, hPrev, NULL, nCmdShow);
 }
